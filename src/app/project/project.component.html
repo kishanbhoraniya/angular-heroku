@@ -1,0 +1,80 @@
+<div class="container pt-4">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Projects</h1>
+      <div style='display:flex;justify-content: flex-end;'>
+        <button class="btn btn-primary" style="position: relative;right: 0px;" (click)="openModal(template)">Add
+          Project</button>
+      </div>
+      <table class="table">
+        <thead class="table">
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Duration</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let project of projectList">
+            <td>
+              {{project.id}}
+            </td>
+            <td>
+              {{project.name}}
+            </td>
+            <td>
+              {{project.description}}
+            </td>
+            <td>
+              {{ today |  amDifference: project.created_at :'days' : false }} days
+            </td>
+            <td>
+              <button type="button" class="btn btn-default" (click)="deleteProject(project.id)">
+                <i class="bi-trash"></i> Delete
+              </button>
+            </td>
+            <td>
+              <a [routerLink]="['/project/'+project.id]"> <button type="button" class="btn btn-default"><i class="bi-arrow-bar-right"></i> Tasks</button></a>           
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h2 class="modal-title pull-left" d="my-modal-title">Add New Project</h2>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="createProjectForm" enctype="multipart/form-data" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="projectName">Project Name</label>
+        <input type="text" formControlName="projectName" class="form-control" id="projectName"
+         autocomplete="off">
+
+      </div>
+      <div class="form-group">
+        <label for="projectDes">Project Description </label>
+        <input type="text" formControlName="projectDes" class="form-control" id="projectDes"
+        autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="projectAvtar">Avatar</label>
+        <input type="file" formControlName="projectAvatar" class="form-control" id="projectAvatar"
+          (change)="onFileChanged($event)">
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="submit()">Create</button>
+  </div>
+</ng-template>

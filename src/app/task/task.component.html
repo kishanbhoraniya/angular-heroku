@@ -1,0 +1,183 @@
+<div class="container pt-4">
+    <div class="row">
+      <div class="col-md-12">
+        <div *ngIf="isTask" class="border p-4" style = 'margin-bottom:1em;'>
+          <h2>
+            Project Detail
+          </h2>
+          <h4>Project Name: {{projectDetail?.name}}</h4>
+          <h4>Project Description: {{projectDetail?.description}}</h4>
+          <h4>Project Duration : {{ today |  amDifference: projectDetail?.created_at :'days' : false }} days</h4>
+          <h4 *ngIf="isProfileImage">Project Image: <img style="height:100px;width:100px" src = {{projectDetail?.avatar}} /></h4>
+          <button type="button" class="btn btn-default" (click)="editProject(editProjectModal)">
+            <i class="bi-pencil-square"></i> Edit
+          </button>          
+        </div>
+        <h1>{{ isTask ? 'Tasks' : 'Sub Tasks'}}</h1>
+        <div style='display:flex;justify-content: flex-end;'>
+          <button class="btn btn-primary" style="position: relative;right: 0px;" (click)="openModal(template)">Add
+            {{ isTask ? 'Task' : 'Sub Task'}}</button>
+        </div>
+        <p *ngIf="!taskList || taskList==0" style="text-align: center;">
+          You haven't created any {{ isTask ? 'Task' : 'Sub Task'}} yet.
+        </p>        
+        <table class="table" *ngIf="taskList && taskList.length>0">
+          <thead class="table">
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let task of taskList">
+              <td>
+                {{task.id}}
+              </td>
+              <td>
+                {{task.title}}
+              </td>
+              <td>
+                {{task.description}}
+              </td>
+              <td>
+                {{ task.start_date | amDateFormat: 'YYYY-MM-DD' }}
+              </td> 
+              <td>
+                {{task.end_date | amDateFormat: 'YYYY-MM-DD'}}
+              </td>                           
+              <td>
+                <button type="button" class="btn btn-default" (click)="editModal(edit,task.id)">
+                  <i class="bi-pencil-square"></i> Edit
+                </button>
+                <button type="button" class="btn btn-default" (click)="deleteTask(id,task.id)">
+                  <i class="bi-trash"></i> Delete
+                </button>
+              </td>
+              <td>
+                <a [routerLink]="['/project/'+id + '/tasks/' + task.id]"> <button type="button" class="btn btn-default"><i class="bi-arrow-bar-right"></i> Sub Tasks</button></a>                         
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template #template>
+    <div class="modal-header">
+      <h2 class="modal-title pull-left" d="my-modal-title">Add New {{ isTask ? 'Task' : 'Sub Task'}}</h2>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="createTaskForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="taskTitle">Task Name</label>
+          <input type="text" formControlName="taskTitle" class="form-control" id="taskTitle"
+           autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="taskDes">Task Description </label>
+          <input type="text" formControlName="taskDes" class="form-control" id="taskDes"
+          autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="taskStartDate">Start Date</label>
+          <input type="date" formControlName="taskStartDate" class="form-control" id="taskStartDate"
+            >
+        </div>
+        <div class="form-group">
+            <label for="taskEndDate">End Date</label>
+            <input type="date" formControlName="taskEndDate" class="form-control" id="taskEndDate"
+              >
+          </div>
+          <!-- <div class="form-group">
+            <label for="taskAssignee">Assignee</label>
+            <select class="form-control" id="taskAssignee">
+              <option *ngFor="let user of userList" [value]="user.id">
+                {{user.first_name}}
+              </option>               
+            </select>
+          </div>                  -->
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+      <button type="button" class="btn btn-primary" (click)="submit()">Create</button>
+    </div>
+  </ng-template>
+  
+  <ng-template #edit>
+    <div class="modal-header">
+      <h2 class="modal-title pull-left" d="my-modal-title">Edit Project</h2>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="editTaskForm">
+        <div class="form-group">
+          <label for="editTaskTitle">Task Name</label>
+          <input type="text" formControlName="editTaskTitle" class="form-control" id="editTaskTitle"
+           autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="editTaskDes">Task Description </label>
+          <input type="text" formControlName="editTaskDes" class="form-control" id="editTaskDes"
+          autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="editTaskStartDate">Start Date</label>
+          <input type="date" formControlName="editTaskStartDate" class="form-control" id="editTaskStartDate"
+            >
+        </div>
+        <div class="form-group">
+            <label for="editTaskEndDate">End Date</label>
+            <input type="date" formControlName="editTaskEndDate" class="form-control" id="editTaskEndDate"
+              >
+          </div>  
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+      <button type="button" class="btn btn-primary" (click)="updateTask(currentTask.id)">Update</button>
+    </div>
+  </ng-template>
+
+  <ng-template #editProjectModal>
+    <div class="modal-header">
+      <h2 class="modal-title pull-left" d="my-modal-title">Edit Project</h2>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="editProjectForm">
+        <div class="form-group">
+          <label for="projectName">Project Name</label>
+          <input type="text" formControlName="editProjectName" class="form-control" id="projectName"
+           autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="projectDes">Project Description </label>
+          <input type="text" formControlName="editProjectDes" class="form-control" id="projectDes"
+          autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="projectAvtar">Avatar</label>
+          <input type="file" formControlName="editProjectAvatar" class="form-control" id="projectAvatar"
+            (change)="onFileChanged($event)">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+      <button type="button" class="btn btn-primary" (click)="updateProject(projectDetail.id)">Update</button>
+    </div>
+  </ng-template>
